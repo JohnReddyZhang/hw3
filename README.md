@@ -22,7 +22,71 @@ My own idea was that the connection of refactoring and quality could be as high 
 
 This is because of two reasons: the first is that refactoring may not increase the quality of code when using specific, mathematical methods such as *complexity* to measure, and the other is that refactoring actually increases readability and in result increases maintainability, which could be considered as conceptual code quality as well. 
 
-The analysis done by [Sokol, et al.](http://www.mauricioaniche.com/wp-content/uploads/2013/04/wbma2013-refactoring1.pdf) shows that, "Quantitative analysis showed that refactoring indeed does not decrease Cyclomatic Complexity." The example in the paper shows that refactoring could decrease complexity by extracting and combining certain replicated methods in a fragment, but practical study did not suggest that such changes is obvious in all refactoring: most refactoring in fact increases the complexity, but there are still 23% of documented refactoring decreases complexity while only 12% had the same effect among other commits. This suggests that refactoring may not have a strong association with the quality of code when measured by quantitive metrics. Other articles also support this point. 
+The analysis done by [Sokol, et al.](http://www.mauricioaniche.com/wp-content/uploads/2013/04/wbma2013-refactoring1.pdf) shows that, "Quantitative analysis showed that refactoring indeed does not decrease Cyclomatic Complexity." As presented below, the example in the paper shows that refactoring could decrease complexity by extracting and combining certain replicated methods in a fragment, but practical study did not suggest that such changes is obvious in all refactoring: most refactoring in fact increases the complexity, but there are still 23% of documented refactoring decreases complexity while only 12% had the same effect among other commits. This suggests that refactoring may not have a strong association with the quality of code when measured by quantitive metrics. Other articles also support this point. 
+
+---
+
+###### Example: Refactoring decreases cyclomatic complexity by 1
+
+```java
+public void Employee {
+    ...
+    public void pay(double value) {
+        double factor = 1.0;
+        if (isManager()) {
+            factor = 0.9;
+        }
+        this.money += value * factor;
+    }
+    public void payBonus(double value) {       
+        double factor = 1.0;
+        if (isManager()) {
+            factor = 0.9;
+        }
+        this.bonus += value * factor;
+    }
+    public void payOvertime(int hours) {
+        double factor = 1.0;
+        if (isManager()) {
+            factor = 0.9;
+        }
+        this.money += hours * getHourValue() * factor;
+    }
+... 
+}
+```
+
+Each method of the code has a complexity of 2 by having an ```if``` statement, and thus the block has a total of 6 CC. (This also shows that arbitrary block of code can be measured by some metrics to reflect quality, as stated in the first question)
+
+A method called "Extract Method" is applied to decrease cyclomatic complexity:
+
+```java
+public void Employee {
+    ...
+    public void pay(double value) {
+        this.money += value * calculateFactor();
+    }
+    public void payBonus(double value) {
+        this.bonus += value * calculateFactor();
+    }
+    public void payOvertime(int hours) {
+        this.money += hours * getHourValue()
+           * calculateFactor();
+    }
+    private double calculateFactor() {
+        double factor = 1.0;
+        if (isManager()) {
+            factor = 0.9;
+        }
+        return factor;
+    }
+... 
+}
+```
+
+By extracting the ```if``` statement to standalone ```calculateFactor()```, CC is decreased by 1 by decreasing 1 for each original method and adding another method of complexity 2.
+
+---
 
 However, the other point, "Refactoring increases readability and maintainability," is also important, and should be considered a reason supporting the association of code quality and refactoring. This point is supported largely by [Korzeniowski](https://blog.codebeat.co/how-refactoring-impacts-code-quality-and-productivity-473941a9d7fb), while stating that keeping the code clean could be helpful in long term project development and maintenance, as the quality of code will degrade as time goes on, and refactoring - keeping the code readable and clean - will slow down the process. This makes sense as redesigning the code will make the code more simple and structured than before. Even if the complexity is not decreased largely, possibly because of unavoidable complexity (essential complexity), it will be easier for others to understand the code functionality, and cumulatively make the whole project concise, and provide better usability of different fragments in future development. This point is also supported by Sokol, et al., even though the research did not cover this point quantitatively.
 
