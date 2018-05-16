@@ -26,7 +26,7 @@ The analysis done by [Sokol, et al.](http://www.mauricioaniche.com/wp-content/up
 
 ---
 
-###### Example: Refactoring decreases cyclomatic complexity by 1
+###### Example: Refactoring decreases cyclomatic complexity by 1 (Provided by Sokol, et al.)
 
 ```java
 public void Employee {
